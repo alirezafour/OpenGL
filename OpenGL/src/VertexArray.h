@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 class VertextBuffer;
 class VertexBufferLayout;
 
@@ -14,6 +16,6 @@ public:
 	void Bind() const;
 	void UnBind() const;
 private:
-	unsigned int m_RendererID;
+	uint32_t m_RendererID;
 };
 

@@ -1,18 +1,20 @@
 #pragma once
 
+#include <cstdint>
+
 class IndexBuffer
 {
 public:
-	IndexBuffer(const unsigned int* data, unsigned int count);
+	IndexBuffer(const uint32_t* data, uint32_t count);
 	~IndexBuffer();
 
 	void Bind() const;
 	void UnBind() const ;
 
-	inline unsigned int GetCount() const { return m_Count; }
+	inline uint32_t GetCount() const { return m_Count; }
 
 private:
-	unsigned int m_RendererID; // relevant id for opengl
-	unsigned int m_Count;
+	uint32_t m_RendererID; // relevant id for opengl
+	uint32_t m_Count;
 };
 
