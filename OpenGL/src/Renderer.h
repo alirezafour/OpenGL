@@ -17,6 +17,7 @@ void GLAPIENTRY glDebugOutput(GLenum source,
 	const void* userParam);
 
 void EnableOpenGLDebug();
+
 // break point on error with VS only
 #define ASSERT(x) if (!(x)) __debugbreak();
 

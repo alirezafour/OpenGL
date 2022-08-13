@@ -10,6 +10,15 @@
 #include "VertexBufferLayout.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "test/TestClearColor.h"
+#include "test/TestTexture2D.h"
+
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_opengl3.h"
+#include "imgui/imgui_impl_glfw.h"
 
 int main(void)
 {
@@ -27,7 +36,7 @@ int main(void)
 
 
 	/* Create a windowed mode window and its OpenGL context */
-	window = glfwCreateWindow(640, 480, "Hello OpenGL", NULL, NULL);
+	window = glfwCreateWindow(960, 540, "Hello OpenGL", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
@@ -49,20 +58,6 @@ int main(void)
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
 	{
-		/* define buffer to begin with before game loop */
-
-		float positions[] = {
-			-0.5f, -0.5f, 0.0f, 0.0f, // 0
-			 0.5f, -0.5f, 1.0f, 0.0f, // 1
-			 0.5f,  0.5f, 1.0f, 1.0f, // 2
-			-0.5f,  0.5f, 0.0f, 1.0f  // 3
-		};
-
-		uint32_t indices[] = { // index buffer
-			0, 1, 2,
-			2, 3, 0
-		};
-
 		// Enable opengl debug call back
 		EnableOpenGLDebug();
 
@@ -70,36 +65,21 @@ int main(void)
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		VertexArray va;
-		VertextBuffer vb(positions, 4 * 4 * sizeof(float)); // already binded
-
-		VertexBufferLayout layout;
-		layout.Push<float>(2);
-		layout.Push<float>(2);
-		va.AddBuffer(vb, layout);
-
-		// using index buffer 
-		IndexBuffer ib(indices, 6);
-
-		Shader shader("res/shaders/Basic.shader");
-		shader.Bind();
-		shader.SetUniform4f("u_Color", 0.2f, 0.0f, 1.0f, 1.0f);
-
-		// 
-		Texture texture("res/textures/CppLogo.png");
-		texture.Bind();
-		shader.SetUniform1i("u_Texture", 0);
-
-		// unbind everything
-		va.UnBind();
-		vb.UnBind();
-		ib.UnBind();
-		shader.UnBind();
-
 		Renderer renderer;
 
-		float redColor = 0.0f;
-		float increament = 0.05f;
+		const char* glsl_version = "#version 100";
+
+		ImGui::CreateContext();
+		ImGui::StyleColorsDark();
+		ImGui_ImplGlfw_InitForOpenGL(window, true);
+		ImGui_ImplOpenGL3_Init(glsl_version);
+
+		test::Test* currentTest = nullptr;
+		std::unique_ptr<test::TestMenu> testMenu = std::make_unique<test::TestMenu>(currentTest);
+		currentTest = testMenu.get();
+
+		testMenu->RegisterTest<test::TestClearColor>("Clear Color");
+		testMenu->RegisterTest<test::TestTexture2D>("2D Texture");
 
 		/* Loop until the user closes the window */
 		while (!glfwWindowShouldClose(window))
@@ -107,27 +87,36 @@ int main(void)
 			// render here
 			renderer.Clear();
 
-			// bind program
-			shader.Bind();
-			shader.SetUniform4f("u_Color", redColor, 0.0f, 1.0f, 1.0f); // uniform per draw
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
 
-			renderer.Draw(va, ib, shader);
+			if (currentTest)
+			{
+				currentTest->OnUpdate(0.f);
+				currentTest->OnRender();
+				ImGui::Begin("Test");
+				if (currentTest != testMenu.get() && ImGui::Button("<-"))
+				{
+					delete currentTest;
+					currentTest = testMenu.get();
+				}
+				currentTest->OnImGuiRender();
+				ImGui::End();
+			}
 
-			// set r to be interp between 1-0 with 0.05f
-			if (redColor > 1.0f)
-				increament = -0.05f;
-			else if (redColor < 0.0f)
-				increament = 0.05f;
-	
-			redColor += increament;
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-			/* Swap front and back buffers */
 			glfwSwapBuffers(window);
-
-			/* Poll for and process events */
 			glfwPollEvents();
 		}
 	}
+
+	// Cleanup
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 	glfwTerminate();
 	return 0;
 }
