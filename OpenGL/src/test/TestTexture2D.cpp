@@ -57,6 +57,7 @@ namespace test {
 	TestTexture2D::~TestTexture2D()
 	{
 		glClearColor(0.f, 0.f, 0.f, 1.f);
+		m_Shader->UnBind();
 	}
 
 	void TestTexture2D::OnUpdate(float deltaTime)
@@ -87,7 +88,6 @@ namespace test {
 
 			renderer.Draw(*m_VAO, *m_IndexBuffer, *m_Shader);
 		}
-
 	}
 
 	void TestTexture2D::OnImGuiRender()

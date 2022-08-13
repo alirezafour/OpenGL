@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "Renderer.h"
+#include "Debug.h"
 
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
@@ -33,6 +34,7 @@ int main(void)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+	const char* glsl_version = "#version 100";
 
 
 	/* Create a windowed mode window and its OpenGL context */
@@ -61,19 +63,14 @@ int main(void)
 		// Enable opengl debug call back
 		EnableOpenGLDebug();
 
-		// just for blending enable 
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 		Renderer renderer;
-
-		const char* glsl_version = "#version 100";
 
 		ImGui::CreateContext();
 		ImGui::StyleColorsDark();
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init(glsl_version);
 
+		// Tests
 		test::Test* currentTest = nullptr;
 		std::unique_ptr<test::TestMenu> testMenu = std::make_unique<test::TestMenu>(currentTest);
 		currentTest = testMenu.get();
