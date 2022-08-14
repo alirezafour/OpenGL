@@ -10,8 +10,8 @@
 Shader::Shader(const std::string& filePath)
 	:m_FilePath(filePath), m_RendererID(0)
 {
-	ShaderProgramSource source = ParseShader(filePath);
-	m_RendererID = CreateShader(source.VertexSource, source.FragmentSource);
+	auto[vertexSource, fragmentSource] = ParseShader(filePath);
+	m_RendererID = CreateShader(vertexSource, fragmentSource);
 }
 
 Shader::~Shader()
@@ -19,7 +19,7 @@ Shader::~Shader()
 	glDeleteProgram(m_RendererID);
 }
 
-ShaderProgramSource Shader::ParseShader(const std::string& filepath)
+std::tuple<std::string, std::string> Shader::ParseShader(const std::string& filepath)
 {
 	std::ifstream stream(filepath);
 

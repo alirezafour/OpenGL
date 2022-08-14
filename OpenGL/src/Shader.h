@@ -3,13 +3,9 @@
 #include <string>
 #include <cstdint>
 #include <unordered_map>
+#include <Tuple>
 #include "glm/gtc/matrix_transform.hpp"
 
-struct ShaderProgramSource
-{
-	std::string VertexSource;
-	std::string FragmentSource;
-};
 
 class Shader
 {
@@ -29,7 +25,7 @@ public:
 private:
 	uint32_t CompileShader(uint32_t type, const std::string& source);
 	uint32_t CreateShader(const std::string& vertexShader, const std::string& fragmentShader);
-	ShaderProgramSource ParseShader(const std::string& filepath);
+	std::tuple<std::string, std::string> ParseShader(const std::string& filepath);
 	int32_t GetUniformLocation(const std::string& name);
 
 private:

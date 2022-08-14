@@ -20,6 +20,7 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_opengl3.h"
 #include "imgui/imgui_impl_glfw.h"
+#include "test/TestBatchRendering.h"
 
 int main(void)
 {
@@ -34,7 +35,6 @@ int main(void)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
-	const char* glsl_version = "#version 100";
 
 
 	/* Create a windowed mode window and its OpenGL context */
@@ -68,6 +68,7 @@ int main(void)
 		ImGui::CreateContext();
 		ImGui::StyleColorsDark();
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
+		const char* glsl_version = "#version 100";
 		ImGui_ImplOpenGL3_Init(glsl_version);
 
 		// Tests
@@ -77,6 +78,7 @@ int main(void)
 
 		testMenu->RegisterTest<test::TestClearColor>("Clear Color");
 		testMenu->RegisterTest<test::TestTexture2D>("2D Texture");
+		testMenu->RegisterTest<test::TestBatchRendering>("Batch Rendering");
 
 		/* Loop until the user closes the window */
 		while (!glfwWindowShouldClose(window))
